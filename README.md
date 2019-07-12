@@ -2,7 +2,7 @@
 Tool to find Last.FM scrobbles that were made incorrectly by SubSonic
 
 ### Why this Tool Exists
-If you use last.fm scrobbling with SubSonic or one of its derivatives it may have created improper scrobbles referenced by [this](https://github.com/airsonic/airsonic/issues/776) bug.  After scrobbling since 2016 with SubSonic I didn't want to have to go through my scrobble history manually and so I created this tool.
+If you use last.fm scrobbling with SubSonic or one of its derivatives it may have created improper scrobbles referenced by [this](https://github.com/airsonic/airsonic/issues/776#issuecomment-455806900) bug.  After scrobbling since 2016 with SubSonic I didn't want to have to go through my scrobble history manually and so I created this tool.
 This bug only effects songs scrobbled from the web player, if you only use an app to listen to your SubSonic library then you shouldn't need this tool.
 
 ### Requirements
