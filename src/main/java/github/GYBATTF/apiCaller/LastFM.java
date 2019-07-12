@@ -170,6 +170,15 @@ public class LastFM extends AbstractDownloader implements Serializable {
 	}
 	
 	/**
+	 * Gets the username
+	 * @return
+	 * the username stored
+	 */
+	public String getUser() {
+		return username;
+	}
+	
+	/**
 	 * Checks to see if a track needs to be corrected
 	 * @param matching
 	 * the track we are checking for corrections for

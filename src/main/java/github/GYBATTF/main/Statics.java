@@ -66,7 +66,7 @@ public class Statics {
 	public static final String TRACKS_PER_PAGE = "50";
 
 	// Strings used when printing track lists
-	public static final String HEADER = "\t<tr>\r\n\t\t<th><h3>PAGE %s</h3></th>";
+	public static final String HEADER = "\t<tr>\r\n\t\t<th><h3><a href=\"https://www.last.fm/user/%s/library?page=%s\" target=\"_blank\">PAGE %s</a></h3></th>";
 	public static final String SUBHEADER = "\t<tr>\r\n\t\t" +
 										   "<th>TIME DIFFERENCE</th>\r\n\t\t<th>DURATION" +
 										   "</th>\r\n\t\t<th>DATE SCROBBLED</th>\r\n\t\t" +

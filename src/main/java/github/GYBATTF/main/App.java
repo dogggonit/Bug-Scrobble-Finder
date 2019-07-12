@@ -61,7 +61,7 @@ public final class App {
 		
 		File dir = new File(Statics.OUTPUT_DIR);
 		dir.mkdir();
-		printTrackListHTML(history, output);
+		printTrackListHTML(history, output, lastFM);
 		
 		new File(Statics.TMP_DIR).delete();
 		hFile.delete();
@@ -94,7 +94,7 @@ public final class App {
 	 * the file to save to
 	 * @throws Exception
 	 */
-	private static void printTrackListHTML(TrackList history, File f) throws Exception {
+	private static void printTrackListHTML(TrackList history, File f, LastFM lfm) throws Exception {
 		PrintWriter pr = new PrintWriter(f);
 		pr.println("<html>\r\n<head>\r\n<style>\r\ntable, th, td {\r\n\tborder: 1px solid black;\r\n}\r\n</style>\r\n</head>\r\n<body>");
 		pr.println("<h1>List of Runs in your Last.FM History</h1>");
@@ -112,7 +112,7 @@ public final class App {
 		for (Track t : history) {
 			if (!pageNumber.equals(t.get("page"))) {
 				if (!pageNumber.equals("0")) {
-					printPage(pr, page, pageNumber);
+					printPage(pr, page, pageNumber, lfm);
 				}
 				
 				pageNumber = t.get("page");
@@ -126,7 +126,7 @@ public final class App {
 		}
 		
 		
-		printPage(pr, page, pageNumber);
+		printPage(pr, page, pageNumber, lfm);
 		pr.println("\r\n\t</tr>\r\n</table>");
 		pr.println("</body>\r\n</html>");
 		pr.close();
@@ -141,8 +141,8 @@ public final class App {
 	 * @param pageNumber
 	 * the page number we are printing
 	 */
-	private static void printPage(PrintWriter pr, TrackList page, String pageNumber) {
-		pr.println(String.format(Statics.HEADER, pageNumber));
+	private static void printPage(PrintWriter pr, TrackList page, String pageNumber, LastFM lfm) {
+		pr.println(String.format(Statics.HEADER, lfm.getUser(), pageNumber, pageNumber));
 		pr.println(Statics.SUBHEADER);
 		for (Track l : page) {
 			String color = "<font color=\"%s\">%%s</font>";
