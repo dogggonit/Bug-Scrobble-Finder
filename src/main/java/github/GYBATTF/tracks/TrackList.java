@@ -3,8 +3,10 @@ package github.GYBATTF.tracks;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -18,7 +20,9 @@ import github.GYBATTF.main.Statics;
  * @author GYBATTF
  * https://github.com/GYBATTF/Bug-Scrobble-Finder
  */
-public class TrackList implements Iterable<Track> {
+public class TrackList implements Iterable<Track>, Serializable {
+	private static final long serialVersionUID = 1296296404492313423L;
+	
 	private Node head;
 	private Node tail;
 	private int size;
@@ -144,16 +148,31 @@ public class TrackList implements Iterable<Track> {
 		FileOutputStream fos = new FileOutputStream(f);
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		
-		ArrayList<Track> write = new ArrayList<>();
-		for (Track t : this) {
-			write.add(t);
-		}
 		
-		oos.writeObject(write);
+		
+		oos.writeObject(toArrayList());
 		oos.close();
 		fos.close();
 	}
 	
+	private ArrayList<Track> toArrayList() {
+		ArrayList<Track> write = new ArrayList<>();
+		for (Track t : this) {
+			write.add(t);
+		}
+		return write;
+	}
+	
+	public TrackList shallowCopy() {
+		TrackList copy = new TrackList();
+		
+		for (Track t : this) {
+			copy.add(t);
+		}
+		
+		return copy;
+	}
+
 	/**
 	 * Loads a TrackList from disk
 	 * @param f
@@ -456,5 +475,16 @@ public class TrackList implements Iterable<Track> {
 			return rtn;
 		}
 
+	}
+	
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeObject(toArrayList());
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		ArrayList<Track> read = new ArrayList<>();
+		read = (ArrayList<Track>) in.readObject();
+		addAll(read);
 	}
 }

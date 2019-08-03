@@ -26,11 +26,20 @@ public class Subsonic extends AbstractDownloader implements Serializable {
 	
 	private String baseUrl;
 	
+	private String password;
+	private String salt;
+	private String username;
+	private String url;
+	
 	/**
 	 * Blank constructor for serializable
 	 */
 	public Subsonic() {
 		baseUrl = "";
+		password = "";
+		salt = "";
+		username = "";
+		url = "";
 	}
 	
 	/**
@@ -179,4 +188,52 @@ public class Subsonic extends AbstractDownloader implements Serializable {
 
 		return password;
 	}
+	
+	public String getPassword() {
+		return password.equals("") ? "" : "********";
+	}
+
+	public void setPassword(String password) {
+		salt = genSalt(14);
+		this.password = md5(password, salt);
+		buildURL();
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+		buildURL();
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+		buildURL();
+	}
+	
+	private void buildURL() {
+		baseUrl = "";
+		
+		if (url.length() > 0 && url.charAt(url.length() - 1) != '/') {
+			url += '/';
+		}
+		
+		baseUrl = url + "rest/search3.view";
+		baseUrl += "?u=" + username;
+		baseUrl += "&t=" + password;
+		baseUrl += "&s=" + salt;
+		baseUrl += "&query=%s";
+		baseUrl += "&albumCount=0&songCount=%d&artistCount=0";
+		baseUrl += "&v=1.15.0";
+		baseUrl += "&c=RunsFinder";
+		baseUrl += "&f=json";
+	}
+	
+	
 }

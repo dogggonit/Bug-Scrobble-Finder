@@ -67,8 +67,7 @@ public final class App {
 		hFile.delete();
 		umFile.delete();
 		
-		System.out.println("Done!");
-		System.out.println("Your results are in the " + Statics.OUTPUT_DIR + " directory.");
+		System.out.println(Statics.FINISHED_MESSAGE);
 	}
 	
     /**
@@ -96,39 +95,31 @@ public final class App {
 	 */
 	private static void printTrackListHTML(TrackList history, File f, LastFM lfm) throws Exception {
 		PrintWriter pr = new PrintWriter(f);
-		pr.println("<html>\r\n<head>\r\n<style>\r\ntable, th, td {\r\n\tborder: 1px solid black;\r\n}\r\n</style>\r\n</head>\r\n<body>");
-		pr.println("<h1>List of Runs in your Last.FM History</h1>");
-		pr.println("<p>This is a list of all the runs in your last.fm history.</p>");
-		pr.println("<p><font color=\"red\">Red</font> means that the track was probably incorrecly scrobbled.</p>");
-		pr.println("<p><font color=\"green\">Green</font> means the track was probaby correctly scrobbled.</p>");
-		pr.println("<p><font color=\"blue\">Blue</font> means that the the program couldn't determine if the scrobble was correct, and that you need to manually check it.</p>");
-		pr.println("<p>I recommend checking manually before deleting anything from your last.fm history.</p>");
-		pr.println("<table style=\"width:100%%\">");
+		pr.println(Statics.PAGE_TOP);
 		
 		String pageNumber = "0";
 		
 		TrackList page = new TrackList();
 		
 		for (Track t : history) {
-			if (!pageNumber.equals(t.get("page"))) {
+			if (!pageNumber.equals(t.get(Statics.PAGE))) {
 				if (!pageNumber.equals("0")) {
 					printPage(pr, page, pageNumber, lfm);
 				}
 				
-				pageNumber = t.get("page");
+				pageNumber = t.get(Statics.PAGE);
 				
 				page = new TrackList();
 				page.add(t);
 			} else {
-				pageNumber = t.get("page");
+				pageNumber = t.get(Statics.PAGE);
 				page.add(t);
 			}
 		}
 		
 		
 		printPage(pr, page, pageNumber, lfm);
-		pr.println("\r\n\t</tr>\r\n</table>");
-		pr.println("</body>\r\n</html>");
+		pr.println(Statics.FOOTER);
 		pr.close();
 	}
 	

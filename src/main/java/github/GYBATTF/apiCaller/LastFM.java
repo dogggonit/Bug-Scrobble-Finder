@@ -20,20 +20,19 @@ import github.GYBATTF.tracks.TrackList;
  */
 public class LastFM extends AbstractDownloader implements Serializable {
 	private static final long serialVersionUID = -4994362501807665685L;
-	private static final String BASE_URL = "http://ws.audioscrobbler.com/2.0/?method=%s&user=%s&api_key=%s%s&format=json";
 
 	private String fillInString;
-	String apiKey;
-	String username;
+	public String apiKey;
+	public String username;
 	
 	/**
 	 * Blank constructor for use by serializable.
 	 * If used otherwise no calls will work
 	 */
 	public LastFM() {
-		apiKey = "";
-		username = "";
-		fillInString = "";
+		apiKey = Statics.BLANK;
+		username = Statics.BLANK;
+		fillInString = Statics.BLANK;
 	}
 	
 	/**
@@ -46,7 +45,7 @@ public class LastFM extends AbstractDownloader implements Serializable {
 	public LastFM(String apiKey, String username) {
 		this.apiKey = apiKey;
 		this.username = username;
-		fillInString = String.format(BASE_URL, "%s", username, apiKey, "%s");
+		fillInString = String.format(Statics.LAST_FM_BASE_URL, Statics.STR, username, apiKey, Statics.STR);
 	}
 	
 	/**
@@ -58,8 +57,8 @@ public class LastFM extends AbstractDownloader implements Serializable {
 	 */
 	public TrackList downloadHistory() throws NowPlayingException {
 		TrackList history = new TrackList();
-		String url = "";
-		String formatString = String.format(fillInString, "user.getrecenttracks", "&limit=" + Statics.TRACKS_PER_PAGE + "&page=%d");
+		String url = Statics.BLANK;
+		String formatString = String.format(fillInString, Statics.RECENT_TRACKS, Statics.LIMIT + Statics.TRACKS_PER_PAGE + Statics.PAGE_TO_DL);
 		
 		int currentPage = 0;
 		int totalPages  = 1;
@@ -68,16 +67,16 @@ public class LastFM extends AbstractDownloader implements Serializable {
 			currentPage++;
 			url = String.format(formatString, currentPage);
 			JSONObject page = download(url);
-			String strTotalPages = page.get("recenttracks").get("@attr").get("totalPages").toString();
+			String strTotalPages = page.get(Statics.RECENTTRACKS).get(Statics.ATTR).get(Statics.TOTAL_PAGES).toString();
 			totalPages = Integer.parseInt(strTotalPages);
 			
-			ProgressBar.progress(currentPage, totalPages, "Downloading page");
+			ProgressBar.progress(currentPage, totalPages, Statics.HISTORY_DOWNLOAD_MESSAGE);
 			
-			JSONArray tracks = (JSONArray) page.get("recenttracks").get("track");
+			JSONArray tracks = (JSONArray) page.get(Statics.RECENTTRACKS).get(Statics.TRACK);
 			for (JSONParser jo : tracks) {
 				JSONObject currentTrack = (JSONObject) jo;
 				
-				if (currentTrack.get("@attr") != null) {
+				if (currentTrack.get(Statics.ATTR) != null) {
 					throw new NowPlayingException();
 				}
 				
@@ -87,15 +86,15 @@ public class LastFM extends AbstractDownloader implements Serializable {
 				String mbid = currentTrack.get(Statics.MBID).toString();
 				
 				tmp = (JSONObject) currentTrack.get(Statics.DATE);
-				String dateEpoch = tmp.get("uts").toString();
-				String date = tmp.get("#text").toString();
+				String dateEpoch = tmp.get(Statics.UTS).toString();
+				String date = tmp.get(Statics.TEXT).toString();
 				
 				tmp = (JSONObject) currentTrack.get(Statics.ARTIST);
-				String artist = tmp.get("#text").toString();
+				String artist = tmp.get(Statics.TEXT).toString();
 				String artistMBID = tmp.get(Statics.MBID).toString();
 				
 				tmp = (JSONObject) currentTrack.get(Statics.ALBUM);
-				String album = tmp.get("#text").toString();
+				String album = tmp.get(Statics.TEXT).toString();
 				String albumMBID = tmp.get(Statics.MBID).toString();
 				
 				Track t = new Track();
@@ -114,6 +113,17 @@ public class LastFM extends AbstractDownloader implements Serializable {
 				history.add(t);
 			}
 		}
+		
+		int count = 0;
+		int page = 0;
+		
+		for (Track t : history) {
+			if (count++ % 50 == 0) {
+				page++;
+			}
+			
+			t.put(Statics.PAGE, Integer.toString(page));
+		}
 				
 		return history;
 	}
@@ -128,7 +138,7 @@ public class LastFM extends AbstractDownloader implements Serializable {
 	public boolean matchArtist(Track matching) {
 		String artist = matching.get(Statics.ARTIST);
 		
-		String url = String.format(fillInString, "artist.getCorrection", "%s");
+		String url = String.format(fillInString, "artist.getCorrection", Statics.STR);
 		url = String.format(url, "&artist=%s");
 		
 		int start = url.indexOf("&user");
@@ -229,5 +239,21 @@ public class LastFM extends AbstractDownloader implements Serializable {
 		} else {
 			return true;
 		}
+	}
+	
+	public String getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(String apiKey) {
+		this.apiKey = apiKey;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }
