@@ -1,4 +1,4 @@
-package gui;
+package github.GYBATTF.gui;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

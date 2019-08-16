@@ -1,4 +1,4 @@
-package gui;
+package github.GYBATTF.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -53,7 +53,7 @@ public class MainWindow extends JFrame {
 		prefCache = getPrefs();
 		
 		frame = new JFrame("Bug-Scrobble-Finder");
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		
