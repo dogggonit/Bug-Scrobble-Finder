@@ -157,8 +157,10 @@ public class TrackList implements Iterable<Track>, Serializable {
 	
 	private ArrayList<Track> toArrayList() {
 		ArrayList<Track> write = new ArrayList<>();
-		for (Track t : this) {
-			write.add(t);
+		if (size != 0) {
+			for (Track t : this) {
+				write.add(t);
+			} 
 		}
 		return write;
 	}
