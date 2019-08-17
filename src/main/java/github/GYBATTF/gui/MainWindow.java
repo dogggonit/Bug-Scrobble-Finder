@@ -27,20 +27,30 @@ import github.GYBATTF.apiCaller.LastFM;
 import github.GYBATTF.apiCaller.Subsonic;
 import github.GYBATTF.tracks.TrackList;
 
+/**
+ * This is a learning effort, it will look gross and ugly
+ * @author GYBATTF
+ *
+ */
 public class MainWindow extends JFrame {
 	private static final long serialVersionUID = -8581459749153609355L;
+	
+	static boolean started = false;
 	
 	static final File PREF_FILE = new File("PREFERENCES.SER");
 	private static ArrayList<Object> prefCache;
 	
-	private static JProgressBar progress;
-	private static JLabel progressStatus;
-	private static JFrame frame;
+	static JProgressBar progress;
+	static JLabel progressStatus;
+	static JFrame frame;
 	
-	private static JPanel buttons;
-	private static JButton startBtn;
+	static JPanel buttons;
+	static JButton startBtn;
 	
 	private static TrackList runs;
+	static LastFM lfm;
+	static Subsonic ss;
+	static TrackList hist;
 	static TrackList ssMatches;
 	
 	public MainWindow() {}
@@ -147,24 +157,23 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	private static class Start implements ActionListener {
+	static class Start implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			LastFM lfm = (LastFM) prefCache.get(0);
-			Subsonic ss = (Subsonic) prefCache.get(1);
-			TrackList hist = (TrackList) prefCache.get(2);
+			
+			lfm = (LastFM) prefCache.get(0);
+			ss = (Subsonic) prefCache.get(1);
+			hist = (TrackList) prefCache.get(2);
 			ssMatches = (TrackList) prefCache.get(3);
 
-			progressStatus.setText("Checking settings...");
 			if (lfm.getApiKey().equals("") || lfm.getUser().equals("")
 				|| ss.getUrl().equals("") || ss.getPassword().equals("") || ss.getUsername().equals("")) {
 				try {
 					SettingsError.settingsError();
 				} catch (Exception e) {}
 			}
-			progressStatus.setText("Settings loaded!");
-
 			buttons.remove(startBtn);
+			
 			if (!(hist.size() == 0)) {
 				progressStatus.setText("Do you want to reload your Last.FM history?");
 				JButton yes = new JButton("Yes");
@@ -173,22 +182,24 @@ public class MainWindow extends JFrame {
 				no.addActionListener(new YesNo.No());
 				buttons.add(yes);
 				buttons.add(no);
+			} else {
+				
 			}
-			
-			System.out.println("Here?");
 		}
 	}
 	
-	
+	static void histCheck() {
+		
+	}
 }
 
 class SettingsError implements ActionListener {
 	private static JFrame settingsError;
 	
 	static void settingsError() throws Exception {
+		MainWindow.progressStatus.setText("Settings Error!");
 		settingsError = new JFrame("Error");
-		
-		settingsError = new JFrame("Bug-Scrobble-Finder");
+
 		settingsError.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		settingsError.setResizable(false);
 		try {
@@ -201,7 +212,7 @@ class SettingsError implements ActionListener {
 		
 		JLabel errorMessage = new JLabel("Please complete settings in order for the program to run.");
 		JButton ok = new JButton("ok");
-		ok.addActionListener(new Preferences(MainWindow.getPrefs()));
+		//ok.addActionListener(new Preferences(MainWindow.getPrefs()));
 		ok.addActionListener(new SettingsError());
 		
 		c.gridx = 0;

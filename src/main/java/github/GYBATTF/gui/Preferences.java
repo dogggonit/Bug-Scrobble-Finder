@@ -168,6 +168,11 @@ public class Preferences extends JFrame implements ActionListener {
 				e.printStackTrace();
 			}
 			
+			MainWindow.progressStatus.setText("Halted");
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = 2;
+			MainWindow.buttons.add(MainWindow.startBtn, c);
 			frame.dispose();
 		}
 	}
