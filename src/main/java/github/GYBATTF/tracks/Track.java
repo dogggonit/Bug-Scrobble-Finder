@@ -175,4 +175,9 @@ public class Track implements Serializable {
 		
 		return rtn;
 	}
+	
+	@Override
+	public int hashCode() {
+		return (get(Statics.ARTIST).hashCode() + get(Statics.NAME).hashCode() + get(Statics.ALBUM).hashCode()) / 3;
+	}
 }

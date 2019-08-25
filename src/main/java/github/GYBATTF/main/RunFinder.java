@@ -16,7 +16,7 @@ import github.GYBATTF.tracks.TrackList;
  * @author GYBATTF
  * https://github.com/GYBATTF/Bug-Scrobble-Finder
  */
-public final class App {
+public final class RunFinder {
 	/**
 	 * Main loop for the program.
 	 * @param args
@@ -95,7 +95,7 @@ public final class App {
 	 */
 	private static void printTrackListHTML(TrackList history, File f, LastFM lfm) throws Exception {
 		PrintWriter pr = new PrintWriter(f);
-		pr.println(Statics.PAGE_TOP);
+		pr.println(RunsStatics.PAGE_TOP);
 		
 		String pageNumber = "0";
 		
@@ -119,7 +119,7 @@ public final class App {
 		
 		
 		printPage(pr, page, pageNumber, lfm);
-		pr.println(Statics.FOOTER);
+		pr.println(RunsStatics.FOOTER);
 		pr.close();
 	}
 	
@@ -133,8 +133,8 @@ public final class App {
 	 * the page number we are printing
 	 */
 	private static void printPage(PrintWriter pr, TrackList page, String pageNumber, LastFM lfm) {
-		pr.println(String.format(Statics.HEADER, lfm.getUser(), pageNumber, pageNumber));
-		pr.println(Statics.SUBHEADER);
+		pr.println(String.format(RunsStatics.HEADER, lfm.getUser(), pageNumber, pageNumber));
+		pr.println(RunsStatics.SUBHEADER);
 		for (Track l : page) {
 			String color = "<font color=\"%s\">%%s</font>";
 			if (l.get(Statics.STATUS).equals("+")) {
@@ -151,7 +151,7 @@ public final class App {
 			String name = String.format(color, l.get(Statics.NAME));
 			String artist = String.format(color, l.get(Statics.ARTIST));
 			String album = String.format(color, l.get(Statics.ALBUM));
-			pr.println(String.format(Statics.TRACKLINE, difference, duration, date, name, artist, album));
+			pr.println(String.format(RunsStatics.TRACKLINE, difference, duration, date, name, artist, album));
 			pr.println();
 		}
 	}

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import github.GYBATTF.gui.MainWindow;
 import github.GYBATTF.jsonParser.JSONArray;
 import github.GYBATTF.jsonParser.JSONObject;
 import github.GYBATTF.jsonParser.JSONParser;
@@ -70,6 +71,166 @@ public class LastFM extends AbstractDownloader implements Serializable {
 			String strTotalPages = page.get(Statics.RECENTTRACKS).get(Statics.ATTR).get(Statics.TOTAL_PAGES).toString();
 			totalPages = Integer.parseInt(strTotalPages);
 			
+			ProgressBar.progress(currentPage, totalPages, Statics.HISTORY_DOWNLOAD_MESSAGE);
+			
+			JSONArray tracks = (JSONArray) page.get(Statics.RECENTTRACKS).get(Statics.TRACK);
+			for (JSONParser jo : tracks) {
+				JSONObject currentTrack = (JSONObject) jo;
+				
+				if (currentTrack.get(Statics.ATTR) != null) {
+					throw new NowPlayingException();
+				}
+				
+				JSONObject tmp;
+				
+				String name = currentTrack.get(Statics.NAME).toString();
+				String mbid = currentTrack.get(Statics.MBID).toString();
+				
+				tmp = (JSONObject) currentTrack.get(Statics.DATE);
+				String dateEpoch = tmp.get(Statics.UTS).toString();
+				String date = tmp.get(Statics.TEXT).toString();
+				
+				tmp = (JSONObject) currentTrack.get(Statics.ARTIST);
+				String artist = tmp.get(Statics.TEXT).toString();
+				String artistMBID = tmp.get(Statics.MBID).toString();
+				
+				tmp = (JSONObject) currentTrack.get(Statics.ALBUM);
+				String album = tmp.get(Statics.TEXT).toString();
+				String albumMBID = tmp.get(Statics.MBID).toString();
+				
+				Track t = new Track();
+				t.put(Statics.NAME, name);
+				t.put(Statics.MBID, mbid);
+				t.put(Statics.DATE_EPOCH, dateEpoch);
+				t.put(Statics.DATE, date);
+				t.put(Statics.ARTIST, artist);
+				t.put(Statics.ARTIST_MBID, artistMBID);
+				t.put(Statics.ALBUM, album);
+				t.put(Statics.ALBUM_MBID, albumMBID);
+				t.put(Statics.PAGE, Integer.toString(currentPage));
+				t.put(Statics.TOTAL_PAGES, strTotalPages);
+				
+				
+				history.add(t);
+			}
+		}
+		
+		int count = 0;
+		int page = 0;
+		
+		for (Track t : history) {
+			if (count++ % 50 == 0) {
+				page++;
+			}
+			
+			t.put(Statics.PAGE, Integer.toString(page));
+		}
+				
+		return history;
+	}
+	
+	/**
+	 * Downloads all scrobbled tracks from the user's last.fm history
+	 * @return
+	 * a list of all scrobbled tracks
+	 * @throws NowPlayingException
+	 * if a song is being a scrobbled
+	 */
+	public TrackList downloadHistoryStats() throws NowPlayingException {
+		TrackList history = new TrackList();
+		String url = Statics.BLANK;
+		String formatString = String.format(fillInString, Statics.RECENT_TRACKS, Statics.LIMIT + "200" + Statics.PAGE_TO_DL);
+		
+		int currentPage = 0;
+		int totalPages  = 1;
+		
+		while (currentPage <= totalPages) {
+			currentPage++;
+			url = String.format(formatString, currentPage);
+			JSONObject page = download(url);
+			String strTotalPages = page.get(Statics.RECENTTRACKS).get(Statics.ATTR).get(Statics.TOTAL_PAGES).toString();
+			totalPages = Integer.parseInt(strTotalPages);
+			
+			ProgressBar.progress(currentPage, totalPages, Statics.HISTORY_DOWNLOAD_MESSAGE);
+			
+			JSONArray tracks = (JSONArray) page.get(Statics.RECENTTRACKS).get(Statics.TRACK);
+			for (JSONParser jo : tracks) {
+				JSONObject currentTrack = (JSONObject) jo;
+				
+				if (currentTrack.get(Statics.ATTR) != null) {
+					throw new NowPlayingException();
+				}
+				
+				JSONObject tmp;
+				
+				String name = currentTrack.get(Statics.NAME).toString();
+				String mbid = currentTrack.get(Statics.MBID).toString();
+				
+				tmp = (JSONObject) currentTrack.get(Statics.DATE);
+				String dateEpoch = tmp.get(Statics.UTS).toString();
+				String date = tmp.get(Statics.TEXT).toString();
+				
+				tmp = (JSONObject) currentTrack.get(Statics.ARTIST);
+				String artist = tmp.get(Statics.TEXT).toString();
+				String artistMBID = tmp.get(Statics.MBID).toString();
+				
+				tmp = (JSONObject) currentTrack.get(Statics.ALBUM);
+				String album = tmp.get(Statics.TEXT).toString();
+				String albumMBID = tmp.get(Statics.MBID).toString();
+				
+				Track t = new Track();
+				t.put(Statics.NAME, name);
+				t.put(Statics.MBID, mbid);
+				t.put(Statics.DATE_EPOCH, dateEpoch);
+				t.put(Statics.DATE, date);
+				t.put(Statics.ARTIST, artist);
+				t.put(Statics.ARTIST_MBID, artistMBID);
+				t.put(Statics.ALBUM, album);
+				t.put(Statics.ALBUM_MBID, albumMBID);
+				t.put(Statics.PAGE, Integer.toString(currentPage));
+				t.put(Statics.TOTAL_PAGES, strTotalPages);
+				
+				
+				history.add(t);
+			}
+		}
+		
+		int count = 0;
+		int page = 0;
+		
+		for (Track t : history) {
+			if (count++ % 50 == 0) {
+				page++;
+			}
+			
+			t.put(Statics.PAGE, Integer.toString(page));
+		}
+				
+		return history;
+	}
+	
+	public TrackList downloadHistoryGUI() throws NowPlayingException {
+		TrackList history = new TrackList();
+		String url = Statics.BLANK;
+		String formatString = String.format(fillInString, Statics.RECENT_TRACKS, Statics.LIMIT + Statics.TRACKS_PER_PAGE + Statics.PAGE_TO_DL);
+		
+		int currentPage = 0;
+		int totalPages  = 1;
+		
+		MainWindow.progressStatus.setText("Downloading history...");
+		
+		while (currentPage <= totalPages) {
+			currentPage++;
+			url = String.format(formatString, currentPage);
+			JSONObject page = download(url);
+			String strTotalPages = page.get(Statics.RECENTTRACKS).get(Statics.ATTR).get(Statics.TOTAL_PAGES).toString();
+			totalPages = Integer.parseInt(strTotalPages);
+			
+			System.out.print(currentPage + " : ");
+			System.out.println(totalPages);
+			
+			MainWindow.progress.setMaximum(totalPages);
+			MainWindow.progress.setValue(currentPage);
 			ProgressBar.progress(currentPage, totalPages, Statics.HISTORY_DOWNLOAD_MESSAGE);
 			
 			JSONArray tracks = (JSONArray) page.get(Statics.RECENTTRACKS).get(Statics.TRACK);

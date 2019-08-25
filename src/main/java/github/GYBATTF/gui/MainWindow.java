@@ -24,6 +24,7 @@ import javax.swing.JProgressBar;
 import javax.swing.UIManager;
 
 import github.GYBATTF.apiCaller.LastFM;
+import github.GYBATTF.apiCaller.NowPlayingException;
 import github.GYBATTF.apiCaller.Subsonic;
 import github.GYBATTF.tracks.TrackList;
 
@@ -40,8 +41,8 @@ public class MainWindow extends JFrame {
 	static final File PREF_FILE = new File("PREFERENCES.SER");
 	private static ArrayList<Object> prefCache;
 	
-	static JProgressBar progress;
-	static JLabel progressStatus;
+	public static JProgressBar progress;
+	public static JLabel progressStatus;
 	static JFrame frame;
 	
 	static JPanel buttons;
@@ -174,21 +175,17 @@ public class MainWindow extends JFrame {
 			}
 			buttons.remove(startBtn);
 			
-			if (!(hist.size() == 0)) {
-				progressStatus.setText("Do you want to reload your Last.FM history?");
-				JButton yes = new JButton("Yes");
-				yes.addActionListener(new YesNo.Yes());
-				JButton no = new JButton("No");
-				no.addActionListener(new YesNo.No());
-				buttons.add(yes);
-				buttons.add(no);
-			} else {
-				
+			try {
+				lfm.downloadHistoryGUI();
+			} catch (NowPlayingException e) {
+				System.out.println("yolo");
+				progressStatus.setText("Please stop scrobbling to last.fm!");
+				restoreStart();
 			}
 		}
 	}
 	
-	static void histCheck() {
+	static void restoreStart() {
 		
 	}
 }
@@ -210,15 +207,18 @@ class SettingsError implements ActionListener {
 		errorElements.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		
-		JLabel errorMessage = new JLabel("Please complete settings in order for the program to run.");
+		JLabel errorMessage = new JLabel("      Please complete settings in order for the program to run.     ");
 		JButton ok = new JButton("ok");
-		//ok.addActionListener(new Preferences(MainWindow.getPrefs()));
 		ok.addActionListener(new SettingsError());
 		
 		c.gridx = 0;
 		c.gridy = 0;
-		errorElements.add(errorMessage, c);
+		errorElements.add(new JLabel("   "), c);
 		c.gridy = 1;
+		errorElements.add(errorMessage, c);
+		c.gridy = 2;
+		errorElements.add(new JLabel("   "), c);
+		c.gridy = 3;
 		errorElements.add(ok, c);
 		
 		settingsError.add(errorElements);
